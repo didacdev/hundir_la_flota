@@ -1,22 +1,17 @@
 package database;
 
-import common.database.Jugador;
-import common.database.Partida;
 import common.database.ServicioDatosInterfaz;
 import common.rmi.IniciarRMI;
-
 import common.server.ServicioAutenticacionInterfaz;
-import server.Servidor;
 
-import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
 
 
 public class Basededatos extends IniciarRMI {
+
+    private static String URL_nombre_dat;
 
     public Basededatos() {
 
@@ -28,45 +23,13 @@ public class Basededatos extends IniciarRMI {
     public void operacionRMI() {
         try {
 
-            Registry registry = LocateRegistry.createRegistry(this.registryPort);
+            LocateRegistry.createRegistry(this.registryPort);
 
-            // Obtener la dirección IP
-            String ip = InetAddress.getLocalHost().getHostAddress();
-
-            // Crear jugadores y partidas de prueba
-            Jugador jugador1 = new Jugador("user1", "password1");
-            Jugador jugador2 = new Jugador("user2", "password2");
-
-            Partida partida1 = new Partida(jugador1);
-            partida1.setPlayerTwo(jugador2);
-
-            // Crear listas y mapas para almacenar los jugadores y partidas
-            List<Jugador> registredUsers = new ArrayList<>();
-            registredUsers.add(jugador1);
-            registredUsers.add(jugador2);
-
-            List<String> onlineUsers = new ArrayList<>();
-            onlineUsers.add("jugador1");
-            onlineUsers.add("jugador2");
-
-            HashMap<Integer, Partida> createdGames = new HashMap<>();
-            createdGames.put(1, partida1);
-
-            List<Integer> waitingGames = new ArrayList<>();
-            waitingGames.add(1);
-
-            List<Integer> startedGames = new ArrayList<>();
-            startedGames.add(1);
-
-
-            // Crear una instancia de ServidorDatosImpl con los datos de prueba
-            ServicioDatosImpl servicioDatos = new ServicioDatosImpl(registredUsers, onlineUsers, waitingGames, startedGames, createdGames);
-
-//            ServicioDatosImpl servicioDatos = new ServicioDatosImpl();
+            ServicioDatosImpl servicioDatos = new ServicioDatosImpl();
             ServicioDatosInterfaz serDatStub = (ServicioDatosInterfaz) UnicastRemoteObject.exportObject(servicioDatos, 0);
 
             String uniqueIdDat = "001";
-            String URL_nombre_dat = "rmi://" + ip + ":" + this.registryPort + "/" + ServicioAutenticacionInterfaz.NOMBRE_SERVICIO + "/" + uniqueIdDat;
+            URL_nombre_dat = "rmi://" + this.host + ":" + this.registryPort + "/" + ServicioAutenticacionInterfaz.NOMBRE_SERVICIO + "/" + uniqueIdDat;
 
             Naming.rebind(URL_nombre_dat, serDatStub);
 
@@ -79,6 +42,10 @@ public class Basededatos extends IniciarRMI {
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    public static String getURL_nombre_dat() {
+        return URL_nombre_dat;
     }
 
     public static void main(String[] args) {

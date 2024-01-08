@@ -6,6 +6,7 @@ import common.database.Partida;
 import common.database.ServicioDatosInterfaz;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,40 +20,14 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
     //--------------------------------- CONSTRUCTORES ---------------------------------
     public ServicioDatosImpl() {
+        this.registredUsers = new ArrayList<>();
+        this.onlineUsers = new ArrayList<>();
+        this.waitingGames = new ArrayList<>();
+        this.startedGames = new ArrayList<>();
+        this.createdGames = new HashMap<>();
     }
 
-    public ServicioDatosImpl(List<Jugador> registredUsers, List<String> onlineUsers, List<Integer> waitingGames, List<Integer> startedGames, HashMap<Integer, Partida> createdGames) {
-        this.registredUsers = registredUsers;
-        this.onlineUsers = onlineUsers;
-        this.waitingGames = waitingGames;
-        this.startedGames = startedGames;
-        this.createdGames = createdGames;
-    }
-
-    //--------------------------------- GETTERS & SETTERS ---------------------------------
-    public List<Jugador> getRegistredUsers() {
-        return registredUsers;
-    }
-
-    public void setRegistredUsers(List<Jugador> registredUsers) {
-        this.registredUsers = registredUsers;
-    }
-
-    public List<String> getOnlineUsers() {
-        return onlineUsers;
-    }
-
-    public void setOnlineUsers(List<String> onlineUsers) {
-        this.onlineUsers = onlineUsers;
-    }
-
-    public List<Integer> getWaitingGames() {
-        return waitingGames;
-    }
-
-    public void setWaitingGames(List<Integer> waitingGames) {
-        this.waitingGames = waitingGames;
-    }
+    //--------------------------------- METODOS ---------------------------------
 
     public HashMap<Integer, Partida> getStartedGames() {
 
@@ -67,20 +42,6 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
     }
 
-    public void setStartedGames(List<Integer> startedGames) {
-        this.startedGames = startedGames;
-    }
-
-    public HashMap<Integer, Partida> getCreatedGames() {
-        return createdGames;
-    }
-
-    public void setCreatedGames(HashMap<Integer, Partida> createdGames) {
-        this.createdGames = createdGames;
-    }
-
-
-    //--------------------------------- METODOS ---------------------------------
     @Override
     public Data getData() throws RemoteException {
         int registredUsers = this.registredUsers.size();
@@ -97,5 +58,26 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
         return this.registredUsers;
 
+    }
+
+    @Override
+    public boolean addUser(String nombre, String password) throws RemoteException {
+        Jugador jugador = new Jugador(nombre, password);
+        if (registredUsers.contains(jugador)) {
+            return false;
+        } else {
+            registredUsers.add(jugador);
+            return true;
+        }
+    }
+
+    @Override
+    public HashMap<Integer, Partida> getCreatedGames() throws RemoteException {
+        return this.createdGames;
+    }
+
+    @Override
+    public List<Integer> getWaitingGames() throws RemoteException {
+        return this.waitingGames;
     }
 }

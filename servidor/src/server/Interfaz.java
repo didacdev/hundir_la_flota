@@ -7,17 +7,13 @@ import java.util.*;
 
 public class Interfaz {
 
-    private Servidor servidor;
-
-    public Interfaz(Servidor servidorDatos) {
-        this.servidor = servidorDatos;
-    }
+    public Interfaz() {}
 
     public void iniciar() {
         Scanner scanner = new Scanner(System.in);
         int opcion = 0;
 
-        while (opcion != 3) {
+        while (true) {
             System.out.println();
             System.out.println("Por favor, seleccione una opción:");
             System.out.println("1.- Información del servidor");
@@ -46,16 +42,16 @@ public class Interfaz {
                     break;
             }
         }
-
-        scanner.close();
     }
 
     private void mostrarInformacionServidor() {
         try {
-            Date fechaInicio = servidor.getFechaInicio();
+            Date fechaInicio = Servidor.getFechaInicio();
 
             System.out.println("Información del servidor:");
             System.out.println("Fecha de inicio del servidor: " + fechaInicio);
+            System.out.println("URL del servicio autenticación: " + Servidor.getURL_nombre_aut());
+            System.out.println("URL del servicio gestor: " + Servidor.getURL_nombre_ges());
             System.out.println("Estado: en ejecución");
 
         } catch (Exception e) {
@@ -65,10 +61,11 @@ public class Interfaz {
 
     private void listarPartidas() {
         try {
-            HashMap<Integer, Partida> partidasEnEjecucion = servidor.getPartidasEnEjecucion();
+            HashMap<Integer, Partida> partidasEnEjecucion = Servidor.getPartidasEnEjecucion();
 
             System.out.println("Partidas en ejecución:");
 
+            assert partidasEnEjecucion != null;
             if (partidasEnEjecucion.isEmpty()) {
                 System.out.println("No hay partidas en ejecución.");
             } else {

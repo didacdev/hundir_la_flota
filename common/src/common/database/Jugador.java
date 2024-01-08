@@ -67,10 +67,6 @@ public class Jugador implements Serializable {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public HashMap<Integer, Integer> getGamePoints() {
         return gamePoints;
     }
@@ -79,11 +75,15 @@ public class Jugador implements Serializable {
         this.gamePoints = gamePoints;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getUsername() {
         return username;
+    }
+
+    public int getTotalPoints() {
+        int totalPoints = 0;
+        for (Integer points : gamePoints.values()) {
+            totalPoints += points;
+        }
+        return totalPoints;
     }
 }

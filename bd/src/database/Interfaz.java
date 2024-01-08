@@ -19,7 +19,7 @@ public class Interfaz {
         Scanner scanner = new Scanner(System.in);
         int opcion = 0;
 
-        while (opcion != 3) {
+        while (true) {
             System.out.println();
             System.out.println("Por favor, seleccione una opción:");
             System.out.println("1.- Información de la base de datos");
@@ -45,11 +45,8 @@ public class Interfaz {
                 default:
                     System.out.println();
                     System.out.println("Opción no válida. Por favor, intente de nuevo.");
-                    break;
             }
         }
-
-        scanner.close();
     }
 
     private void mostrarInformacionBaseDatos() {
@@ -57,6 +54,7 @@ public class Interfaz {
             Data data = servidorDatos.getData();
 
             System.out.println("Información de la base de datos:");
+            System.out.println("URL del servicio: " + Basededatos.getURL_nombre_dat());
             System.out.println("Jugadores registrados: " + data.getRegistredUsers());
             System.out.println("Jugadores conectados: " + data.getOnlineUsers());
             System.out.println("Partidas en espera: " + data.getWaitingGames());
@@ -64,7 +62,7 @@ public class Interfaz {
             System.out.println("Partidas creadas: " + data.getCreatedGames());
 
         } catch (Exception e) {
-            System.out.println("Error al obtener la información de la base de datos.");
+            System.out.println("No se puede proporcionar información.");
         }
     }
 
@@ -85,7 +83,7 @@ public class Interfaz {
             }
 
         } catch (Exception e) {
-            System.out.println("Error al obtener la lista de jugadores registrados.");
+            System.out.println("No se puede proporcionar información.");
         }
     }
 }
