@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 
-public class ServidorDatosImpl implements ServicioDatosInterfaz {
+public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
     private HashMap<String, Jugador> registredUsers;
     private List<String> onlineUsers;
@@ -18,10 +18,10 @@ public class ServidorDatosImpl implements ServicioDatosInterfaz {
     private HashMap<Integer, Partida> createdGames;
 
     //--------------------------------- CONSTRUCTORES ---------------------------------
-    public ServidorDatosImpl() {
+    public ServicioDatosImpl() {
     }
 
-    public ServidorDatosImpl(HashMap<String, Jugador> registredUsers, List<String> onlineUsers, List<Integer> waitingGames, List<Integer> startedGames, HashMap<Integer, Partida> createdGames) {
+    public ServicioDatosImpl(HashMap<String, Jugador> registredUsers, List<String> onlineUsers, List<Integer> waitingGames, List<Integer> startedGames, HashMap<Integer, Partida> createdGames) {
         this.registredUsers = registredUsers;
         this.onlineUsers = onlineUsers;
         this.waitingGames = waitingGames;

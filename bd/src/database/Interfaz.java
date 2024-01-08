@@ -7,9 +7,9 @@ import java.util.Scanner;
 
 public class Interfaz {
 
-    private ServidorDatosImpl servidorDatos;
+    private ServicioDatosImpl servidorDatos;
 
-    public Interfaz(ServidorDatosImpl servidorDatos) {
+    public Interfaz(ServicioDatosImpl servidorDatos) {
         this.servidorDatos = servidorDatos;
     }
 

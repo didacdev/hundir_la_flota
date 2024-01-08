@@ -1,46 +1,89 @@
 package server;
 
+import common.database.ServicioDatosInterfaz;
 import common.rmi.IniciarRMI;
 import common.server.ServicioAutenticacionInterfaz;
 import common.server.ServicioGestorInterfaz;
 
+import database.ServicioDatosImpl;
+
+import java.net.InetAddress;
+import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 public class Servidor extends IniciarRMI {
 
+    private static final Date fechaInicio = new Date();
+    private static ServicioDatosInterfaz servicioDatos;
+
     public Servidor() {
-        super(Servidor.class, 2003);
+        super(Servidor.class, 1099);
+        fechaInicio.setTime(System.currentTimeMillis());
     }
 
     @Override
     public void operacionRMI() {
         try {
-            Registry registry = LocateRegistry.createRegistry(registryPort);
 
+            // Obtener la dirección IP
+            String ip = InetAddress.getLocalHost().getHostAddress();
+
+            // Crear instancias de los objetos remotos
             ServicioAutenticacionImpl servicioAutenticacion = new ServicioAutenticacionImpl();
-            ServicioAutenticacionInterfaz serAutStub = (ServicioAutenticacionInterfaz) UnicastRemoteObject.exportObject(servicioAutenticacion, ServicioAutenticacionInterfaz.port);
-
             ServicioGestorImpl servicioGestor = new ServicioGestorImpl();
-            ServicioGestorInterfaz serGesStub = (ServicioGestorInterfaz) UnicastRemoteObject.exportObject(servicioGestor, ServicioGestorInterfaz.port);
 
-            registry.rebind(ServicioAutenticacionInterfaz.NOMBRE_SERVICIO, serAutStub);
-            registry.rebind(ServicioGestorInterfaz.NOMBRE_SERVICIO, serGesStub);
+            // Exportar el objeto remoto
+            ServicioAutenticacionInterfaz serAutStub = (ServicioAutenticacionInterfaz) UnicastRemoteObject.exportObject(servicioAutenticacion, 0);
+            ServicioGestorInterfaz serGesStub = (ServicioGestorInterfaz) UnicastRemoteObject.exportObject(servicioGestor, 0);
 
-            System.out.println(Arrays.toString(registry.list()));
+            // Crear identificadores únicos
+            String uniqueIdAut = "002";
+            String uniqueIdGes = "003";
+
+            // Crear las URL
+            String URL_nombre_aut = "rmi://" + ip + ":" + this.registryPort + "/" + ServicioAutenticacionInterfaz.NOMBRE_SERVICIO + "/" + uniqueIdAut;
+            String URL_nombre_ges = "rmi://" + ip + ":" + this.registryPort + "/" + ServicioGestorInterfaz.NOMBRE_SERVICIO + "/" + uniqueIdGes;
+
+            // Registrar el objeto remoto
+            Naming.rebind(URL_nombre_aut, serAutStub);
+            Naming.rebind(URL_nombre_ges, serGesStub);
+
+            servicioDatos = (ServicioDatosInterfaz) Naming.lookup("rmi://" + ip + ":" + this.registryPort + "/" + ServicioAutenticacionInterfaz.NOMBRE_SERVICIO + "/" + "001");
 
             System.out.println("Servidor iniciado...");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
+    public static Date getFechaInicio() {
+        return fechaInicio;
+    }
 
+    public List<Integer> getPartidasEnEjecucion() {
+        try {
+            return servicioDatos.getStartedGames();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static ServicioDatosInterfaz getServicioDatos() {
+        return servicioDatos;
+    }
 
     public static void main(String[] args) {
-        new Servidor();
+
+        Servidor servidor = new Servidor();
+        Interfaz interfaz = new Interfaz(servidor);
+        interfaz.iniciar();
     }
 }
