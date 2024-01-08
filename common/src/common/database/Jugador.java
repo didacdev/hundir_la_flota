@@ -14,11 +14,13 @@ public class Jugador implements Serializable {
     List<String> shots;
     boolean[][] board;
     String password;
+    String username;
     HashMap<Integer, Integer> gamePoints;
 
 
     //--------------------------------- CONSTRUCTORES ---------------------------------
-    public Jugador(String password) {
+    public Jugador(String username, String password) {
+        this.username = username;
         this.password = password;
         this.shipOne = null;
         this.shipTwo = null;
@@ -75,5 +77,13 @@ public class Jugador implements Serializable {
 
     public void setGamePoints(HashMap<Integer, Integer> gamePoints) {
         this.gamePoints = gamePoints;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 }

@@ -1,8 +1,10 @@
 package database;
 
 import common.database.Data;
+import common.database.Jugador;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 public class Interfaz {
@@ -68,15 +70,17 @@ public class Interfaz {
 
     private void listarJugadoresRegistrados() {
         try {
-            HashMap<String, HashMap<Integer, Integer>> usersList = servidorDatos.getUsersList();
+            List<Jugador> usersList = servidorDatos.getUsersList();
 
             System.out.println("Jugadores registrados:");
 
-            for (String username : usersList.keySet()) {
-                System.out.println("Jugador: " + username);
+            for (Jugador jugador : usersList) {
+                System.out.println(jugador.getUsername());
 
-                for (Integer gameID : usersList.get(username).keySet()) {
-                    System.out.println("Partida: " + gameID + " - Puntuación: " + usersList.get(username).get(gameID));
+                HashMap<Integer, Integer> puntuaciones = jugador.getGamePoints();
+
+                for (Integer gameId : puntuaciones.keySet()) {
+                    System.out.println("    Partida " + gameId + ": " + puntuaciones.get(gameId) + " puntos");
                 }
             }
 

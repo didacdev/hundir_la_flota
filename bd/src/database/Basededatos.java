@@ -34,29 +34,30 @@ public class Basededatos extends IniciarRMI {
             String ip = InetAddress.getLocalHost().getHostAddress();
 
             // Crear jugadores y partidas de prueba
-            Jugador jugador1 = new Jugador("password1");
-            Jugador jugador2 = new Jugador("password2");
+            Jugador jugador1 = new Jugador("user1", "password1");
+            Jugador jugador2 = new Jugador("user2", "password2");
 
             Partida partida1 = new Partida(jugador1);
             partida1.setPlayerTwo(jugador2);
 
             // Crear listas y mapas para almacenar los jugadores y partidas
-            HashMap<String, Jugador> registredUsers = new HashMap<>();
-            registredUsers.put("jugador1", jugador1);
-            registredUsers.put("jugador2", jugador2);
+            List<Jugador> registredUsers = new ArrayList<>();
+            registredUsers.add(jugador1);
+            registredUsers.add(jugador2);
 
             List<String> onlineUsers = new ArrayList<>();
             onlineUsers.add("jugador1");
             onlineUsers.add("jugador2");
 
+            HashMap<Integer, Partida> createdGames = new HashMap<>();
+            createdGames.put(1, partida1);
+
             List<Integer> waitingGames = new ArrayList<>();
             waitingGames.add(1);
 
             List<Integer> startedGames = new ArrayList<>();
-            startedGames.add(2);
+            startedGames.add(1);
 
-            HashMap<Integer, Partida> createdGames = new HashMap<>();
-            createdGames.put(1, partida1);
 
             // Crear una instancia de ServidorDatosImpl con los datos de prueba
             ServicioDatosImpl servicioDatos = new ServicioDatosImpl(registredUsers, onlineUsers, waitingGames, startedGames, createdGames);
@@ -82,16 +83,7 @@ public class Basededatos extends IniciarRMI {
 
     public static void main(String[] args) {
 
-        Basededatos basededatos = new Basededatos();
-
-        // Añadir algunos datos de prueba
-        try {
-            ServicioDatosImpl servicioDatos = new ServicioDatosImpl();
-
-
-        } catch (Exception e) {
-            System.out.println("Error al añadir datos de prueba: " + e.getMessage());
-        }
+        new Basededatos();
 
     }
 }

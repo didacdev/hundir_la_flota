@@ -26,14 +26,14 @@ public interface ServicioDatosInterfaz extends Remote {
      * @return Lista con los usuarios registrados y sus puntuaciones
      * @throws RemoteException
      */
-    public HashMap<String, HashMap<Integer, Integer>> getUsersList() throws RemoteException;
+    public List<Jugador> getUsersList() throws RemoteException;
 
     /**
      * Devuelve una lista con los juegos en ejecución
      * @return Lista con los juegos en ejecución
      * @throws RemoteException
      */
-    List<Integer> getStartedGames() throws RemoteException;
+    HashMap<Integer, Partida> getStartedGames() throws RemoteException;
 
 
 }

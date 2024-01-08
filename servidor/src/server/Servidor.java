@@ -1,5 +1,6 @@
 package server;
 
+import common.database.Partida;
 import common.database.ServicioDatosInterfaz;
 import common.rmi.IniciarRMI;
 import common.server.ServicioAutenticacionInterfaz;
@@ -12,10 +13,7 @@ import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Servidor extends IniciarRMI {
 
@@ -67,17 +65,13 @@ public class Servidor extends IniciarRMI {
         return fechaInicio;
     }
 
-    public List<Integer> getPartidasEnEjecucion() {
+    public HashMap<Integer, Partida> getPartidasEnEjecucion() {
         try {
             return servicioDatos.getStartedGames();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return null;
         }
-    }
-
-    public static ServicioDatosInterfaz getServicioDatos() {
-        return servicioDatos;
     }
 
     public static void main(String[] args) {

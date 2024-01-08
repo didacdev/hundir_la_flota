@@ -1,11 +1,9 @@
 package server;
 
 import common.database.Data;
+import common.database.Partida;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Interfaz {
 
@@ -67,12 +65,16 @@ public class Interfaz {
 
     private void listarPartidas() {
         try {
-            List<Integer> partidasEnEjecucion = servidor.getPartidasEnEjecucion();
+            HashMap<Integer, Partida> partidasEnEjecucion = servidor.getPartidasEnEjecucion();
 
             System.out.println("Partidas en ejecución:");
 
-            for (Integer partidaId : partidasEnEjecucion) {
-                System.out.println("Partida ID: " + partidaId);
+            if (partidasEnEjecucion.isEmpty()) {
+                System.out.println("No hay partidas en ejecución.");
+            } else {
+                for (Map.Entry<Integer, Partida> partida : partidasEnEjecucion.entrySet()) {
+                    System.out.println("Partida " + partida.getKey() + ": " + partida.getValue().getPlayerOne().getUsername() + " vs " + partida.getValue().getPlayerTwo().getUsername());
+                }
             }
 
         } catch (Exception e) {

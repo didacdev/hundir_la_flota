@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
-    private HashMap<String, Jugador> registredUsers;
+    private List<Jugador> registredUsers;
     private List<String> onlineUsers;
     private List<Integer> waitingGames;
     private List<Integer> startedGames;
@@ -21,7 +21,7 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     public ServicioDatosImpl() {
     }
 
-    public ServicioDatosImpl(HashMap<String, Jugador> registredUsers, List<String> onlineUsers, List<Integer> waitingGames, List<Integer> startedGames, HashMap<Integer, Partida> createdGames) {
+    public ServicioDatosImpl(List<Jugador> registredUsers, List<String> onlineUsers, List<Integer> waitingGames, List<Integer> startedGames, HashMap<Integer, Partida> createdGames) {
         this.registredUsers = registredUsers;
         this.onlineUsers = onlineUsers;
         this.waitingGames = waitingGames;
@@ -30,11 +30,11 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     }
 
     //--------------------------------- GETTERS & SETTERS ---------------------------------
-    public HashMap<String, Jugador> getRegistredUsers() {
+    public List<Jugador> getRegistredUsers() {
         return registredUsers;
     }
 
-    public void setRegistredUsers(HashMap<String, Jugador> registredUsers) {
+    public void setRegistredUsers(List<Jugador> registredUsers) {
         this.registredUsers = registredUsers;
     }
 
@@ -54,8 +54,17 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
         this.waitingGames = waitingGames;
     }
 
-    public List<Integer> getStartedGames() {
-        return startedGames;
+    public HashMap<Integer, Partida> getStartedGames() {
+
+        HashMap<Integer, Partida> startedGamesMap = new HashMap<>();
+        for (Integer gameId : startedGames) {
+            Partida partida = createdGames.get(gameId);
+            if (partida != null) {
+                startedGamesMap.put(gameId, partida);
+            }
+        }
+        return startedGamesMap;
+
     }
 
     public void setStartedGames(List<Integer> startedGames) {
@@ -84,15 +93,9 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     }
 
     @Override
-    public HashMap<String, HashMap<Integer, Integer>> getUsersList() throws RemoteException {
+    public List<Jugador> getUsersList() throws RemoteException {
 
-        HashMap<String, HashMap<Integer, Integer>> usersList = new HashMap<>();
-
-        for (String user : this.registredUsers.keySet()) {
-            usersList.put(user, this.registredUsers.get(user).getGamePoints());
-        }
-
-        return usersList;
+        return this.registredUsers;
 
     }
 }
