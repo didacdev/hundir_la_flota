@@ -65,17 +65,24 @@ public class Interfaz {
 
             System.out.println("Partidas en ejecución:");
 
-            assert partidasEnEjecucion != null;
             if (partidasEnEjecucion.isEmpty()) {
                 System.out.println("No hay partidas en ejecución.");
             } else {
-                for (Map.Entry<Integer, Partida> partida : partidasEnEjecucion.entrySet()) {
-                    System.out.println("Partida " + partida.getKey() + ": " + partida.getValue().getPlayerOne().getUsername() + " vs " + partida.getValue().getPlayerTwo().getUsername());
+                for (Map.Entry<Integer, Partida> entry : partidasEnEjecucion.entrySet()) {
+                    Integer gameId = entry.getKey();
+                    Partida partida = entry.getValue();
+                    String playerOneName = partida.getPlayerOne().getUsername();
+                    String playerTwoName = partida.getPlayerTwo() != null ? partida.getPlayerTwo().getUsername() : "N/A";
+                    System.out.println("-------------------------");
+                    System.out.println("ID de la partida: " + gameId);
+                    System.out.println("Jugador 1: " + playerOneName);
+                    System.out.println("Jugador 2: " + playerTwoName);
+                    System.out.println("-------------------------");
                 }
             }
 
         } catch (Exception e) {
-            System.out.println("Error al obtener la lista de partidas en ejecución.");
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }

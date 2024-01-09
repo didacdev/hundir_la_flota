@@ -28,9 +28,6 @@ public class Servidor extends IniciarRMI {
     public void operacionRMI() {
         try {
 
-            // Obtener la dirección IP
-            String ip = InetAddress.getLocalHost().getHostAddress();
-
             // Crear instancias de los objetos remotos
             ServicioAutenticacionImpl servicioAutenticacion = new ServicioAutenticacionImpl();
             ServicioGestorImpl servicioGestor = new ServicioGestorImpl();

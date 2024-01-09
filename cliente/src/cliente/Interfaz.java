@@ -160,7 +160,21 @@ public class Interfaz {
     }
 
     private void iniciarPartida() {
-        // Implementar lógica para iniciar una partida
+        boolean started = false;
+        try {
+            started = Jugador.getServicioGestor().startGame(username);
+        } catch (Exception e) {
+            System.out.println();
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        if (started) {
+            System.out.println();
+            System.out.println("Partida iniciada correctamente");
+        } else {
+            System.out.println();
+            System.out.println("Error al iniciar la partida");
+        }
     }
 
     private void listarPartidas() {
@@ -180,6 +194,24 @@ public class Interfaz {
     }
 
     private void unirsePartida() {
-        // Implementar lógica para unirse a una partida
+        boolean joined = false;
+        try {
+            System.out.println();
+            System.out.println("Introduce el id de la partida a la que quieres unirte: ");
+            Scanner scanner = new Scanner(System.in);
+            int gameId = scanner.nextInt();
+            joined = Jugador.getServicioGestor().joinGame(username, gameId);
+        } catch (Exception e) {
+            System.out.println();
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        if (joined) {
+            System.out.println();
+            System.out.println("Te has unido a la partida correctamente");
+        } else {
+            System.out.println();
+            System.out.println("Error al unirse a la partida");
+        }
     }
 }

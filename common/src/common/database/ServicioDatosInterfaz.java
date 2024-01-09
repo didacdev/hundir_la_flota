@@ -8,7 +8,6 @@ import java.util.List;
 public interface ServicioDatosInterfaz extends Remote {
 
     public static final String NOMBRE_SERVICIO = "ServicioDatos";
-    public static final String host = "localhost";
 
     // Añadir métodos remotos
 
@@ -27,6 +26,20 @@ public interface ServicioDatosInterfaz extends Remote {
      * @throws RemoteException
      */
     public List<Jugador> getUsersList() throws RemoteException;
+
+    /**
+     * Añade un usuario a la lista de usuarios registrados
+     * @param username nombre del usuario
+     * @throws RemoteException
+     */
+    public void addOnlineUser(String username) throws RemoteException;
+
+    /**
+     * Devuelve la lista de jugadores logeados
+     * @return Lista de jugadores logeados
+     * @throws RemoteException
+     */
+    public List<String> getOnlineUsers() throws RemoteException;
 
     /**
      * Devuelve una lista con los juegos en ejecución
@@ -58,5 +71,41 @@ public interface ServicioDatosInterfaz extends Remote {
      */
     public List<Integer> getWaitingGames() throws RemoteException;
 
+    /**
+     * Añade una partida a la lista de partidas creadas
+     * @param partida partida a añadir
+     * @return id de la partida
+     * @throws RemoteException
+     */
+    public Integer addCreatedGame(Partida partida) throws RemoteException;
+
+    /**
+     * Añade una partida a la lista de partidas en ejecución
+     * @param gameId id de la partida
+     * @throws RemoteException
+     */
+    public void addWaitingGame(Integer gameId) throws RemoteException;
+
+    /**
+     * Elimina una partida de la lista de partidas en espera
+     * @param gameId id de la partida
+     * @throws RemoteException
+     */
+    public void removeWaitingGame(Integer gameId) throws RemoteException;
+
+    /**
+     * Añade una partida a la lista de partidas en ejecución
+     * @param gameId id de la partida
+     * @throws RemoteException
+     */
+    public void addStartedGame(Integer gameId) throws RemoteException;
+
+    /**
+     * Actualiza una partida creada
+     * @param gameId id de la partida
+     * @param partida partida actualizada
+     * @throws RemoteException
+     */
+    public void updateStartedGame(Integer gameId, Partida partida) throws RemoteException;
 
 }

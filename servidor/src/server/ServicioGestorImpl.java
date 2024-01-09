@@ -35,4 +35,38 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
 
         return waitingGamesList;
     }
+
+    @Override
+    public Boolean startGame(String username) throws RemoteException {
+
+        try {
+            Jugador jugador = Servidor.getServicioDatos().getUsersList().stream().filter(j -> j.getUsername().equals(username)).findFirst().get();
+            Partida partida = new Partida(jugador);
+            int gameId = Servidor.getServicioDatos().addCreatedGame(partida);
+            Servidor.getServicioDatos().addWaitingGame(gameId);
+            return true;
+
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean joinGame(String username, int gameId) throws RemoteException {
+
+        try {
+            Jugador jugador = Servidor.getServicioDatos().getUsersList().stream().filter(j -> j.getUsername().equals(username)).findFirst().get();
+            Partida partida = Servidor.getServicioDatos().getCreatedGames().get(gameId);
+            partida.setPlayerTwo(jugador);
+            Servidor.getServicioDatos().updateStartedGame(gameId, partida);
+            Servidor.getServicioDatos().removeWaitingGame(gameId);
+            Servidor.getServicioDatos().addStartedGame(gameId);
+            return true;
+
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return false;
+        }
+    }
 }

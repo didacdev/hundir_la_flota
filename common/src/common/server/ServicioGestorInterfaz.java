@@ -11,7 +11,6 @@ import java.util.List;
 public interface ServicioGestorInterfaz extends Remote {
 
     public static final String NOMBRE_SERVICIO = "ServicioGestor";
-    public static final String host = "localhost";
 
     // Añadir métodos remotos
 
@@ -29,4 +28,22 @@ public interface ServicioGestorInterfaz extends Remote {
      * @throws RemoteException
      */
     public List<String> getWaitingGamesWithCreators() throws RemoteException;
+
+    /**
+     * Inicia una partida
+     * @param username nombre del jugador
+     * @post partida añadida a la lista de partidas en ejecución y a la lista de partidas creadas
+     * @throws RemoteException
+     * @return true si se ha iniciado correctamente, false si no
+     */
+    public Boolean startGame(String username) throws RemoteException;
+
+    /**
+     * Une un jugador a una partida
+     * @param username nombre del jugador
+     * @param gameId id de la partida
+     * @return true si se ha unido correctamente, false si no
+     * @throws RemoteException
+     */
+    public Boolean joinGame(String username, int gameId) throws RemoteException;
 }

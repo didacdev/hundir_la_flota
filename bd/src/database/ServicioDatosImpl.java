@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class ServicioDatosImpl implements ServicioDatosInterfaz {
 
@@ -32,12 +33,14 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     public HashMap<Integer, Partida> getStartedGames() {
 
         HashMap<Integer, Partida> startedGamesMap = new HashMap<>();
+
         for (Integer gameId : startedGames) {
             Partida partida = createdGames.get(gameId);
             if (partida != null) {
                 startedGamesMap.put(gameId, partida);
             }
         }
+
         return startedGamesMap;
 
     }
@@ -72,6 +75,16 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     }
 
     @Override
+    public List<String> getOnlineUsers() throws RemoteException {
+        return this.onlineUsers;
+    }
+
+    @Override
+    public void addOnlineUser(String username) throws RemoteException {
+        this.onlineUsers.add(username);
+    }
+
+    @Override
     public HashMap<Integer, Partida> getCreatedGames() throws RemoteException {
         return this.createdGames;
     }
@@ -79,5 +92,39 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     @Override
     public List<Integer> getWaitingGames() throws RemoteException {
         return this.waitingGames;
+    }
+
+    @Override
+    public Integer addCreatedGame(Partida partida) throws RemoteException {
+        Random random = new Random();
+        Integer gameId;
+
+        do {
+            gameId = random.nextInt(1000);
+        } while (createdGames.containsKey(gameId));
+
+        createdGames.put(gameId, partida);
+
+        return gameId;
+    }
+
+    @Override
+    public void addWaitingGame(Integer gameId) throws RemoteException {
+        waitingGames.add(gameId);
+    }
+
+    @Override
+    public void removeWaitingGame(Integer gameId) throws RemoteException {
+        waitingGames.remove(gameId);
+    }
+
+    @Override
+    public void addStartedGame(Integer gameId) throws RemoteException {
+        startedGames.add(gameId);
+    }
+
+    @Override
+    public void updateStartedGame(Integer gameId, Partida partida) throws RemoteException {
+        createdGames.put(gameId, partida);
     }
 }
