@@ -1,5 +1,6 @@
 package common.server;
 
+import common.client.CallbackJugadorIterfaz;
 import common.database.Jugador;
 import common.database.Partida;
 
@@ -46,4 +47,12 @@ public interface ServicioGestorInterfaz extends Remote {
      * @throws RemoteException
      */
     public Boolean joinGame(String username, int gameId) throws RemoteException;
+
+    /**
+     * Añade un callback a la lista de callbacks
+     * @param callbackClientObject callback
+     * @param clientID id del cliente
+     * @throws RemoteException
+     */
+    public void registerForCallback(CallbackJugadorIterfaz callbackClientObject, Integer clientID) throws RemoteException;
 }

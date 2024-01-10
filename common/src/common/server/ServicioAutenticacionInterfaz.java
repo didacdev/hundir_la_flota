@@ -9,13 +9,14 @@ public interface ServicioAutenticacionInterfaz extends Remote {
     // Añadir métodos remotos
 
     /**
-     * Registra un usuario en la base de datos
+     * Registra un usuario en el servidor
      * @param nombre nombre del usuario
      * @param password contraseña del usuario
-     * @return true si se ha registrado correctamente, false si no
+     * @param clientID id del cliente
+     * @return
      * @throws RemoteException
      */
-    public boolean registrarUsuario(String nombre, String password) throws RemoteException;
+    public boolean registrarUsuario(String nombre, String password, Integer clientID) throws RemoteException;
 
     /**
      * Inicia sesión en el servidor
@@ -25,6 +26,14 @@ public interface ServicioAutenticacionInterfaz extends Remote {
      * @throws RemoteException
      */
     public boolean iniciarSesion(String nombre, String password) throws RemoteException;
+
+    /**
+     * Cierra sesión en el servidor
+     * @param nombre nombre del usuario
+     * @return true si se ha cerrado sesión correctamente, false si no
+     * @throws RemoteException
+     */
+    public boolean cerrarSesion(String nombre) throws RemoteException;
 }
 
 

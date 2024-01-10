@@ -23,12 +23,17 @@ public class Interfaz {
         int opcion = 0;
 
         while (Boolean.FALSE.equals(isLogged)) {
+            opcion = 0;
             System.out.println();
             System.out.println("1.- Registrar un nuevo jugador");
             System.out.println("2.- Hacer login");
             System.out.println("3.- Salir");
 
-            opcion = scanner.nextInt();
+            try {
+                opcion = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println();
+            }
 
             switch (opcion) {
                 case 1:
@@ -89,7 +94,15 @@ public class Interfaz {
                     unirsePartida();
                     break;
                 case 5:
-                    System.exit(0);
+                    if (Boolean.TRUE.equals(logeout())) {
+                        System.out.println();
+                        System.out.println("Logout correcto");
+                        isLogged = false;
+                        initialMenu();
+                    } else {
+                        System.out.println();
+                        System.out.println("Error al hacer logout");
+                    }
                     break;
                 default:
                     System.out.println("Opción no válida");
@@ -130,7 +143,7 @@ public class Interfaz {
             String nombre = scanner.nextLine();
             System.out.println("Introduce la contraseña: ");
             String password = scanner.nextLine();
-            isRegistered = Jugador.getServicioAutenticacion().registrarUsuario(nombre, password);
+            isRegistered = Jugador.getServicioAutenticacion().registrarUsuario(nombre, password, Jugador.getClientId());
 
         } catch (Exception e) {
             System.out.println();
@@ -138,6 +151,20 @@ public class Interfaz {
         }
 
         return isRegistered;
+    }
+
+    private Boolean logeout() {
+        boolean isUnlogged = false;
+
+        try {
+            Jugador.getServicioAutenticacion().cerrarSesion(username);
+            isUnlogged = true;
+        } catch (Exception e) {
+            System.out.println();
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        return isUnlogged;
     }
 
     private void mostrarInformacion() {
@@ -161,6 +188,7 @@ public class Interfaz {
 
     private void iniciarPartida() {
         boolean started = false;
+        boolean isWaiting = true;
         try {
             started = Jugador.getServicioGestor().startGame(username);
         } catch (Exception e) {
@@ -168,11 +196,26 @@ public class Interfaz {
             System.out.println("Error: " + e.getMessage());
         }
 
+        System.out.println();
+
         if (started) {
-            System.out.println();
-            System.out.println("Partida iniciada correctamente");
+            System.out.println("Esperando a que se una un contrincante...");
+            while (isWaiting) {
+                try {
+
+                    if (Jugador.getListaSincronizada().datosPendientes() == 0) {
+                        System.out.println("No se ha unido ningún contrincante");
+                        Thread.sleep(2000);
+                    } else if (Jugador.getListaSincronizada().getEvento().equals("partida_iniciada")) {
+                        System.out.println("Se ha unido un contrincante");
+                        isWaiting = false;
+                    }
+                } catch (Exception e) {
+                    System.out.println();
+                    System.out.println("Error: " + e.getMessage());
+                }
+            }
         } else {
-            System.out.println();
             System.out.println("Error al iniciar la partida");
         }
     }
@@ -208,7 +251,19 @@ public class Interfaz {
 
         if (joined) {
             System.out.println();
-            System.out.println("Te has unido a la partida correctamente");
+
+            try {
+                if (Jugador.getListaSincronizada().datosPendientes() == 0) {
+
+                    System.out.println("Error al unirse a la partida");
+
+                } else if (Jugador.getListaSincronizada().getEvento().equals("partida_iniciada")) {
+                    System.out.println("Te has unido a la partida");
+                }
+            } catch (Exception e) {
+                System.out.println();
+                System.out.println("Error: " + e.getMessage());
+            }
         } else {
             System.out.println();
             System.out.println("Error al unirse a la partida");

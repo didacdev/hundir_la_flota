@@ -64,8 +64,9 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     }
 
     @Override
-    public boolean addUser(String nombre, String password) throws RemoteException {
+    public boolean addUser(String nombre, String password, Integer clientID) throws RemoteException {
         Jugador jugador = new Jugador(nombre, password);
+        jugador.setClienteID(clientID);
         if (registredUsers.contains(jugador)) {
             return false;
         } else {
@@ -82,6 +83,11 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     @Override
     public void addOnlineUser(String username) throws RemoteException {
         this.onlineUsers.add(username);
+    }
+
+    @Override
+    public void removeOnlineUser(String username) throws RemoteException {
+        this.onlineUsers.remove(username);
     }
 
     @Override

@@ -49,13 +49,14 @@ public interface ServicioDatosInterfaz extends Remote {
     HashMap<Integer, Partida> getStartedGames() throws RemoteException;
 
     /**
-     * Registra un usuario en la base de datos
+     * Añade un usuario a la lista de usuarios registrados
      * @param nombre nombre del usuario
      * @param password contraseña del usuario
+     * @param clientID id del cliente
      * @return true si se ha registrado correctamente, false si no
      * @throws RemoteException
      */
-    public boolean addUser(String nombre, String password) throws RemoteException;
+    public boolean addUser(String nombre, String password, Integer clientID) throws RemoteException;
 
     /**
      * Devuelve las partidas creadas
@@ -107,5 +108,12 @@ public interface ServicioDatosInterfaz extends Remote {
      * @throws RemoteException
      */
     public void updateStartedGame(Integer gameId, Partida partida) throws RemoteException;
+
+    /**
+     * Elimina un jugador de la lista de jugadores logeados
+     * @param username nombre del jugador
+     * @throws RemoteException
+     */
+    public void removeOnlineUser(String username) throws RemoteException;
 
 }

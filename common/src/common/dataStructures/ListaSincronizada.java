@@ -8,17 +8,15 @@ public class ListaSincronizada {
     {
         lista= new ArrayList<String>();
     }
-    public synchronized int NdatosPendientes()
+    public synchronized int datosPendientes()
     {
         return (lista.size());
     }
-    public synchronized void AñadirEvento(String dato)
-    {
+    public synchronized void addEvento(String dato) {
         lista.add(dato);
         notifyAll();
     }
-    public synchronized String ObtenerEvento() throws InterruptedException
-    {
+    public synchronized String getEvento() throws InterruptedException {
         if (lista.size()==0)
             wait();
         String dato = lista.get(0);

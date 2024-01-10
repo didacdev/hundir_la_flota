@@ -16,6 +16,7 @@ public class Jugador implements Serializable {
     String password;
     String username;
     HashMap<Integer, Integer> gamePoints;
+    Integer clienteID;
 
 
     //--------------------------------- CONSTRUCTORES ---------------------------------
@@ -27,6 +28,7 @@ public class Jugador implements Serializable {
         this.shots = null;
         this.board = new boolean[10][10];
         this.gamePoints = new HashMap<>();
+        this.clienteID = null;
     }
 
 
@@ -85,5 +87,13 @@ public class Jugador implements Serializable {
             totalPoints += points;
         }
         return totalPoints;
+    }
+
+    public Integer getClienteID() {
+        return clienteID;
+    }
+
+    public void setClienteID(Integer clienteID) {
+        this.clienteID = clienteID;
     }
 }

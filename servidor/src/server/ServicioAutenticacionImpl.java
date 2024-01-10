@@ -15,7 +15,7 @@ public class ServicioAutenticacionImpl implements ServicioAutenticacionInterfaz 
     }
 
     @Override
-    public boolean registrarUsuario(String nombre, String password) throws RemoteException {
+    public boolean registrarUsuario(String nombre, String password, Integer clientID) throws RemoteException {
 
         List<Jugador> registeredUsers = Servidor.getServicioDatos().getUsersList();
 
@@ -23,7 +23,7 @@ public class ServicioAutenticacionImpl implements ServicioAutenticacionInterfaz 
             return false;
         }
 
-        return Servidor.getServicioDatos().addUser(nombre, password);
+        return Servidor.getServicioDatos().addUser(nombre, password, clientID);
     }
 
     @Override
@@ -37,5 +37,18 @@ public class ServicioAutenticacionImpl implements ServicioAutenticacionInterfaz 
 
         Servidor.getServicioDatos().addOnlineUser(nombre);
         return Servidor.getServicioDatos().getUsersList().stream().anyMatch(jugador -> jugador.getUsername().equals(nombre) && jugador.getPassword().equals(password));
+    }
+
+    @Override
+    public boolean cerrarSesion(String nombre) throws RemoteException {
+
+        List<String> onlineUsers = Servidor.getServicioDatos().getOnlineUsers();
+
+        if (onlineUsers.stream().noneMatch(jugador -> jugador.equals(nombre))) {
+            return false;
+        }
+
+        Servidor.getServicioDatos().removeOnlineUser(nombre);
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 package server;
 
+import common.client.CallbackJugadorIterfaz;
 import common.database.Partida;
 import common.database.ServicioDatosInterfaz;
 import common.rmi.IniciarRMI;
@@ -18,6 +19,7 @@ public class Servidor extends IniciarRMI {
     private static ServicioDatosInterfaz servicioDatos;
     private static String URL_nombre_aut;
     private static String URL_nombre_ges;
+    private static HashMap<String, CallbackJugadorIterfaz> callbackJugadores = new HashMap<>();
 
     public Servidor() {
         super(Servidor.class, 1099);
@@ -90,6 +92,13 @@ public class Servidor extends IniciarRMI {
             System.out.println("Error: " + e.getMessage());
             return null;
         }
+    }
+
+    public static void addCallbackJugador(String username, CallbackJugadorIterfaz callbackJugador) {
+        callbackJugadores.put(username, callbackJugador);
+    }
+    public static CallbackJugadorIterfaz getCallbackJugador(String username) {
+        return callbackJugadores.get(username);
     }
 
     public static void main(String[] args) {

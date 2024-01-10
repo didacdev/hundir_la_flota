@@ -13,7 +13,7 @@ public class CallbackJugadorImpl implements CallbackJugadorIterfaz {
 
     @Override
     public void notificar(String mensaje) throws java.rmi.RemoteException {
-        listaSincronizada.AñadirEvento(mensaje);
+        listaSincronizada.addEvento(mensaje);
     }
 
 }
