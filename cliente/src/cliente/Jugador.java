@@ -20,7 +20,6 @@ public class Jugador extends IniciarRMI {
 
     public Jugador() {
         super(Jugador.class, 1099);
-//        listaSincronizada = new ListaSincronizada();
     }
 
     @Override
@@ -64,10 +63,6 @@ public class Jugador extends IniciarRMI {
 
     public static Integer getClientId() {
         return clientId;
-    }
-
-    public static String getURL_nombre_ges() {
-        return URL_nombre_ges;
     }
 
     public static void main(String[] args) {

@@ -1,6 +1,7 @@
 package common.server;
 
 import common.client.CallbackJugadorIterfaz;
+import common.database.Coordinate;
 import common.database.Jugador;
 import common.database.Partida;
 
@@ -14,6 +15,14 @@ public interface ServicioGestorInterfaz extends Remote {
     public static final String NOMBRE_SERVICIO = "ServicioGestor";
 
     // Añadir métodos remotos
+
+    /**
+     * Añade una partida en curso
+     * @param gameID id de la partida
+     * @param partida partida
+     * @throws RemoteException
+     */
+    public void addPartidaEnCurso(Integer gameID, Partida partida) throws RemoteException;
 
     /**
      * Devuelve un jugador
@@ -55,4 +64,31 @@ public interface ServicioGestorInterfaz extends Remote {
      * @throws RemoteException
      */
     public void registerForCallback(CallbackJugadorIterfaz callbackClientObject, Integer clientID) throws RemoteException;
+
+    /**
+     * Algortimo de juego
+     * @param gameId id de la partida
+     * @param clienteOneID id del primer cliente
+     * @param clientDosID id del segundo cliente
+     * @throws RemoteException
+     */
+    public void game(Integer gameId, Integer clienteOneID, Integer clientDosID) throws RemoteException;
+
+    /**
+     * Añade las coordenadas de los barcos a la partida
+     * @param gameID id de la partida
+     * @param clienteID id del cliente
+     * @param coordenadaUno coordenada del primer barco
+     * @param coordenadaDos coordenada del segundo barco
+     * @throws RemoteException
+     */
+    public void setCoordinates(Integer gameID, Integer clienteID, Coordinate coordenadaUno, Coordinate coordenadaDos) throws RemoteException;
+
+    /**
+     * Devuelve una partida en curso
+     * @param gameId id de la partida
+     * @return partida
+     * @throws RemoteException
+     */
+    public Partida getPartidaEnCurso(Integer gameId) throws RemoteException;
 }

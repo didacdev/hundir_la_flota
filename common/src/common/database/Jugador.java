@@ -49,32 +49,12 @@ public class Jugador implements Serializable {
         this.shipTwo = shipTwo;
     }
 
-    public List<String> getShots() {
-        return shots;
-    }
-
-    public void setShots(List<String> shots) {
-        this.shots = shots;
-    }
-
-    public boolean[][] getBoard() {
-        return board;
-    }
-
-    public void setBoard(boolean[][] board) {
-        this.board = board;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public HashMap<Integer, Integer> getGamePoints() {
         return gamePoints;
-    }
-
-    public void setGamePoints(HashMap<Integer, Integer> gamePoints) {
-        this.gamePoints = gamePoints;
     }
 
     public String getUsername() {
@@ -95,5 +75,37 @@ public class Jugador implements Serializable {
 
     public void setClienteID(Integer clienteID) {
         this.clienteID = clienteID;
+    }
+
+    public void addShipsToBoard(Coordinate shipOne, Coordinate shipTwo) {
+        List<Coordinate> shipOneCoordinates = shipOne.getOccupiedCoordinates();
+        List<Coordinate> shipTwoCoordinates = shipTwo.getOccupiedCoordinates();
+
+        for (Coordinate coordinate : shipOneCoordinates) {
+            int row = coordinate.getRowBow().toUpperCase().charAt(0) - 'A';
+            int column = coordinate.getColumnBow() - 1;
+            board[row][column] = true;
+        }
+
+        for (Coordinate coordinate : shipTwoCoordinates) {
+            int row = coordinate.getRowBow().toUpperCase().charAt(0) - 'A';
+            int column = coordinate.getColumnBow() - 1;
+            board[row][column] = true;
+        }
+    }
+
+    public void printBoard() {
+        System.out.println("  1 2 3 4 5 6 7 8 9 10");
+        for (int i = 0; i < 10; i++) {
+            System.out.print((char) ('A' + i) + " ");
+            for (int j = 0; j < 10; j++) {
+                if (board[i][j]) {
+                    System.out.print("X ");
+                } else {
+                    System.out.print("  ");
+                }
+            }
+            System.out.println();
+        }
     }
 }

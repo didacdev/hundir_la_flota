@@ -1,5 +1,8 @@
 package cliente;
 
+import common.database.Coordinate;
+import common.database.Partida;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -8,7 +11,8 @@ public class Interfaz {
     private Boolean isLogged = false;
     private String username;
 
-    public Interfaz() {}
+    public Interfaz() {
+    }
 
     public void iniciar() {
 
@@ -17,6 +21,7 @@ public class Interfaz {
 
     }
 
+    // -------------- Menús --------------
     private void initialMenu() {
 
         Scanner scanner = new Scanner(System.in);
@@ -31,7 +36,7 @@ public class Interfaz {
 
             try {
                 opcion = scanner.nextInt();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 System.out.println();
             }
 
@@ -86,12 +91,14 @@ public class Interfaz {
                     break;
                 case 2:
                     iniciarPartida();
+                    esperarEvento();
                     break;
                 case 3:
                     listarPartidas();
                     break;
                 case 4:
                     unirsePartida();
+                    esperarEvento();
                     break;
                 case 5:
                     if (Boolean.TRUE.equals(logeout())) {
@@ -110,6 +117,7 @@ public class Interfaz {
         }
     }
 
+    // -------------- Métodos de login y registro --------------
     private Boolean login() {
 
         boolean isLogged = false;
@@ -167,6 +175,114 @@ public class Interfaz {
         return isUnlogged;
     }
 
+    // -------------- Esperamos a que se produzca un evento --------------
+    private void esperarEvento() {
+        boolean finished = false;
+
+        while (!finished) {
+            try {
+                if (Jugador.getListaSincronizada().datosPendientes() != 0) {
+                    String evento = Jugador.getListaSincronizada().getEvento();
+                    leerEvento(evento);
+                } else {
+                    Thread.sleep(2000);
+                    System.out.println();
+                    System.out.println("Esperando evento...");
+                }
+            } catch (Exception e) {
+                System.out.println();
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+    }
+
+    private void leerEvento(String evento) {
+        String[] parts = evento.split("-");
+        int gameID = Integer.parseInt(parts[0]);
+        String event = parts[1];
+
+        switch (event) {
+            case "coordenadas":
+                getCoordinates(gameID);
+                break;
+        }
+    }
+
+    // -------------- Obtenemos las coordenadas de los barcos --------------
+    private void getCoordinates(int gameID) {
+        Coordinate barcoUno = new Coordinate();
+        Coordinate barcoDos = new Coordinate();
+        boolean isSet = false;
+
+        while (!isSet) {
+
+            // Coordenadas del barco uno
+            barcoUno = getSingleShipCoordinates("uno");
+
+            // Coordenadas del barco dos
+            barcoDos = getSingleShipCoordinates("dos");
+
+            // Comprobamos si las coordenadas son válidas y no se solapan
+            List<Coordinate> barcoUnoCoordinates = barcoUno.getOccupiedCoordinates();
+            List<Coordinate> barcoDosCoordinates = barcoDos.getOccupiedCoordinates();
+
+            if (barcoUnoCoordinates.isEmpty() || barcoDosCoordinates.isEmpty() || barcoUnoCoordinates.stream().anyMatch(barcoDosCoordinates::contains)) {
+                System.out.println();
+                System.out.println("Los barcos no pueden ocupar el mismo espacio o salirse del tablero. Por favor, inténtalo de nuevo.");
+            } else {
+                isSet = true;
+            }
+        }
+
+        try {
+            Jugador.getServicioGestor().setCoordinates(gameID, Jugador.getClientId(), barcoUno, barcoDos);
+            System.out.println();
+            System.out.println("Coordenadas enviadas");
+
+            // Obtener los datos del jugador desde las partidas en curso del servidor
+            Partida partida = Jugador.getServicioGestor().getPartidaEnCurso(gameID);
+            common.database.Jugador jugador;
+            if (partida.getPlayerOne().getClienteID().equals(Jugador.getClientId())) {
+                jugador = partida.getPlayerOne();
+            } else {
+                jugador = partida.getPlayerTwo();
+            }
+            jugador.printBoard();
+        } catch (Exception e) {
+            System.out.println();
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private Coordinate getSingleShipCoordinates(String shipNumber) {
+        System.out.println();
+        System.out.println("Introduce las coordenadas del barco " + shipNumber + ": ");
+        System.out.println("Fila de la proa (A - J): ");
+        Scanner scanner = new Scanner(System.in);
+        String proaRow = scanner.nextLine();
+        System.out.println("Columna de la proa (1 - 10): ");
+        int proaColumn = scanner.nextInt();
+        scanner.nextLine();
+        System.out.println("Horientación (h - horizontal, v - vertical): ");
+        String orientation = scanner.nextLine();
+
+        // Comprobamos si las coordenadas son válidas
+        if (isValidCoordinate(proaRow, proaColumn, orientation)) {
+            return new Coordinate(proaRow, proaColumn, orientation);
+        } else {
+            System.out.println("Las coordenadas introducidas no son válidas. Por favor, inténtalo de nuevo.");
+            return getSingleShipCoordinates(shipNumber);
+        }
+    }
+
+    private boolean isValidCoordinate(String row, int column, String orientation) {
+        String validRows = "ABCDEFGHIJ";
+        String validOrientations = "hv";
+
+        return validRows.contains(row.toUpperCase()) && column >= 1 && column <= 10 && validOrientations.contains(orientation.toLowerCase());
+    }
+
+    // -------------- Métodos del menú --------------
     private void mostrarInformacion() {
         try {
             common.database.Jugador jugador = Jugador.getServicioGestor().getJugador(username);
@@ -180,7 +296,7 @@ public class Interfaz {
                 System.out.println("Partida " + gameId + ": " + points.get(gameId));
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println();
             System.out.println("Error: " + e.getMessage());
         }
@@ -222,7 +338,7 @@ public class Interfaz {
 
     private void listarPartidas() {
 
-        try{
+        try {
             List<String> waitingGames = Jugador.getServicioGestor().getWaitingGamesWithCreators();
             System.out.println();
             System.out.println("Partidas a la espera de contrincante y contrincante: ");
