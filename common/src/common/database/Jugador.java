@@ -2,8 +2,10 @@ package common.database;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class Jugador implements Serializable {
 
@@ -11,7 +13,7 @@ public class Jugador implements Serializable {
     private static final long serialVersionUID = 1L;
     private Coordinate shipOne;
     private Coordinate shipTwo;
-    List<String> shots;
+    List<Coordinate> receivedShots;
     boolean[][] board;
     String password;
     String username;
@@ -25,7 +27,7 @@ public class Jugador implements Serializable {
         this.password = password;
         this.shipOne = null;
         this.shipTwo = null;
-        this.shots = null;
+        this.receivedShots = new ArrayList<>();
         this.board = new boolean[10][10];
         this.gamePoints = new HashMap<>();
         this.clienteID = null;
@@ -73,6 +75,15 @@ public class Jugador implements Serializable {
         return clienteID;
     }
 
+    public List<Coordinate> getReceivedShots() {
+        return receivedShots;
+    }
+
+    public void addReceivedShot(Coordinate shot) {
+        Coordinate coordinate = new Coordinate(shot.getRowBow().toUpperCase(), shot.getColumnBow(), "-");
+        receivedShots.add(coordinate);
+    }
+
     public void setClienteID(Integer clienteID) {
         this.clienteID = clienteID;
     }
@@ -99,13 +110,43 @@ public class Jugador implements Serializable {
         for (int i = 0; i < 10; i++) {
             System.out.print((char) ('A' + i) + " ");
             for (int j = 0; j < 10; j++) {
-                if (board[i][j]) {
+                Coordinate currentCoordinate = new Coordinate(String.valueOf((char) ('A' + i)), j + 1, "-");
+                if (!receivedShots.isEmpty() && receivedShots.contains(currentCoordinate)) {
                     System.out.print("X ");
+                } else if (board[i][j]) {
+                    System.out.print("O ");
                 } else {
                     System.out.print("  ");
                 }
             }
             System.out.println();
         }
+    }
+
+    public void addGamePoint() {
+        int currentPoints = gamePoints.getOrDefault(clienteID, 0);
+        gamePoints.put(clienteID, currentPoints + 1);
+    }
+
+    public void addVictoryPoints() {
+        int currentPoints = gamePoints.getOrDefault(clienteID, 0);
+        gamePoints.put(clienteID, currentPoints + 4);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Jugador jugador = (Jugador) obj;
+        return clienteID != null && clienteID.equals(jugador.clienteID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(clienteID);
     }
 }

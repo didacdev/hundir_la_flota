@@ -133,4 +133,24 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     public void updateStartedGame(Integer gameId, Partida partida) throws RemoteException {
         createdGames.put(gameId, partida);
     }
+
+    @Override
+    public void saveGame(Integer gameID, Partida partida) throws RemoteException {
+
+        for (int i = 0; i < registredUsers.size(); i++) {
+            Jugador jugador = registredUsers.get(i);
+            if (jugador.getClienteID().equals(partida.getPlayerOne().getClienteID())) {
+                registredUsers.set(i, partida.getPlayerOne());
+            } else if (jugador.getClienteID().equals(partida.getPlayerTwo().getClienteID())) {
+                registredUsers.set(i, partida.getPlayerTwo());
+            }
+        }
+
+        createdGames.put(gameID, partida);
+    }
+
+    @Override
+    public void removeStartedGame(Integer gameId) throws RemoteException {
+        startedGames.remove(gameId);
+    }
 }

@@ -6,12 +6,10 @@ import common.database.Jugador;
 import common.database.Partida;
 import common.server.ServicioGestorInterfaz;
 
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -139,6 +137,28 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
     }
 
     @Override
+    public void setCoordinates(Integer gameID, Integer clienteID, Coordinate shot) throws RemoteException {
+        BlockingQueue<ArrayList<Coordinate>> queue = coordenadasEnviadas.get(gameID);
+        if (queue == null) {
+            queue = new LinkedBlockingQueue<>();
+            coordenadasEnviadas.put(gameID, queue);
+        }
+        ArrayList<Coordinate> coordinates = new ArrayList<>();
+        coordinates.add(shot);
+        queue.add(coordinates);
+
+        // Añadir disparo al jugador
+        Partida partida = partidasEnCurso.get(gameID);
+        Jugador jugador;
+        if (partida.getPlayerOne().getClienteID().equals(clienteID)) {
+            jugador = partida.getPlayerTwo();
+        } else {
+            jugador = partida.getPlayerOne();
+        }
+        jugador.addReceivedShot(shot);
+    }
+
+    @Override
     public void game(Integer gameId, Integer clienteOneID, Integer clientDosID) throws RemoteException {
 
         CallbackJugadorIterfaz callbackJugador1 = Servidor.getCallbackJugador(clienteOneID.toString());
@@ -175,8 +195,102 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
         partida.getPlayerTwo().setShipTwo(coordinates2.get(1));
         coordenadasEnviadas.get(gameId).clear();
 
-        System.out.println("Coordenadas de los barcos del jugador 1: " + partida.getPlayerOne().getShipOne() + " " + partida.getPlayerOne().getShipTwo());
-        System.out.println("Coordenadas de los barcos del jugador 2: " + partida.getPlayerTwo().getShipOne() + " " + partida.getPlayerTwo().getShipTwo());
+        // Iniciar el juego
+        while (!partida.isGameOver()) {
+            ArrayList<Coordinate> shots1 = new ArrayList<>();
+            ArrayList<Coordinate> shots2 = new ArrayList<>();
 
+            // Pedir al jugador uno las coordenadas de un disparo
+            callbackJugador1.notificar(gameId + "-disparo");
+            try {
+
+                shots1 = coordenadasEnviadas.get(gameId).take();
+            } catch (InterruptedException e) {
+                throw new RemoteException("Error al obtener las coordenadas del disparo", e);
+            }
+            Coordinate shot1 = new Coordinate(shots1.get(0).getRowBow().toUpperCase(), shots1.get(0).getColumnBow(), "-");
+
+            // Comprobar el resultado del disparo
+            String result1 = checkShot(shot1, partida.getPlayerTwo(), partida.getPlayerOne());
+
+            // Informar del resultado del disparo
+            callbackJugador1.notificar(gameId + "-" + result1);
+            callbackJugador2.notificar(gameId + "-" + result1);
+
+            // Comprobar si el juego ha terminado
+            if (partida.isGameOver()) {
+                break;
+            }
+
+            // Repetir los pasos para el jugador dos
+            callbackJugador2.notificar(gameId + "-disparo");
+            try {
+                shots2 = coordenadasEnviadas.get(gameId).take();
+            } catch (InterruptedException e) {
+                throw new RemoteException("Error al obtener las coordenadas del disparo", e);
+            }
+            Coordinate shot2 = new Coordinate(shots2.get(0).getRowBow().toUpperCase(), shots2.get(0).getColumnBow(), "-");
+
+            String result2 = checkShot(shot2, partida.getPlayerOne(), partida.getPlayerTwo());
+
+            callbackJugador2.notificar(gameId + "-" + result2);
+            callbackJugador1.notificar(gameId + "-" + result2);
+
+            // Comprobar si el juego ha terminado
+            if (partida.isGameOver()) {
+                break;
+            }
+        }
+
+        System.out.println();
+        System.out.println("Partida " + gameId + " terminada");
+        System.out.println("Puntos de " + partida.getPlayerOne().getUsername() + ": " + partida.getPlayerOne().getTotalPoints());
+        System.out.println("Puntos de " + partida.getPlayerTwo().getUsername() + ": " + partida.getPlayerTwo().getTotalPoints());
+
+        // Informar de que el juego ha terminado
+        if (partida.getPlayerOne().getTotalPoints() > partida.getPlayerTwo().getTotalPoints()) {
+            callbackJugador1.notificar("ganador");
+            callbackJugador2.notificar("perdedor");
+        } else if (partida.getPlayerOne().getTotalPoints() < partida.getPlayerTwo().getTotalPoints()) {
+            callbackJugador1.notificar("perdedor");
+            callbackJugador2.notificar("ganador");
+        }
+
+        System.out.println("Partida terminada");
+
+        // Guardar la partida en la base de datos
+        Servidor.getServicioDatos().saveGame(gameId, partida);
+        // Borrar la partida de las partidas en curso
+        partidasEnCurso.remove(gameId);
+        Servidor.getServicioDatos().removeStartedGame(gameId);
+    }
+
+    private String checkShot(Coordinate shot, Jugador opponent, Jugador player) {
+        List<Coordinate> occupiedCoordinatesShipOne = opponent.getShipOne().getOccupiedCoordinates();
+        List<Coordinate> occupiedCoordinatesShipTwo = opponent.getShipTwo().getOccupiedCoordinates();
+
+        List<Coordinate> receivedShots = opponent.getReceivedShots();
+
+        for (Coordinate coordinate : occupiedCoordinatesShipOne) {
+            if (coordinate.equals(shot)) {
+                player.addGamePoint();
+                if (receivedShots.containsAll(occupiedCoordinatesShipOne)) {
+                    return "hundido";
+                }
+                return "tocado";
+            }
+        }
+
+        for (Coordinate coordinate : occupiedCoordinatesShipTwo) {
+            if (coordinate.equals(shot)) {
+                player.addGamePoint();
+                if (receivedShots.containsAll(occupiedCoordinatesShipTwo)) {
+                    return "hundido";
+                }
+                return "tocado";
+            }
+        }
+
+        return "agua";
     }
 }

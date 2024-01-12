@@ -116,4 +116,20 @@ public interface ServicioDatosInterfaz extends Remote {
      */
     public void removeOnlineUser(String username) throws RemoteException;
 
+    /**
+     * Guarda una partida finalizada
+     * @param gameID id de la partida
+     * @param partida partida finalizada
+     * @throws RemoteException
+     */
+    public void saveGame(Integer gameID, Partida partida) throws RemoteException;
+
+    /**
+     * Elimina una partida de la lista de partidas en ejecución
+     * @param gameId id de la partida
+     * @throws RemoteException
+     */
+    public void removeStartedGame(Integer gameId) throws RemoteException;
+
+
 }

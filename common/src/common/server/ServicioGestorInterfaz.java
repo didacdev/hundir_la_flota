@@ -7,7 +7,6 @@ import common.database.Partida;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.List;
 
 public interface ServicioGestorInterfaz extends Remote {
@@ -67,9 +66,11 @@ public interface ServicioGestorInterfaz extends Remote {
 
     /**
      * Algortimo de juego
-     * @param gameId id de la partida
+     *
+     * @param gameId       id de la partida
      * @param clienteOneID id del primer cliente
-     * @param clientDosID id del segundo cliente
+     * @param clientDosID  id del segundo cliente
+     * @return
      * @throws RemoteException
      */
     public void game(Integer gameId, Integer clienteOneID, Integer clientDosID) throws RemoteException;
@@ -83,6 +84,15 @@ public interface ServicioGestorInterfaz extends Remote {
      * @throws RemoteException
      */
     public void setCoordinates(Integer gameID, Integer clienteID, Coordinate coordenadaUno, Coordinate coordenadaDos) throws RemoteException;
+
+    /**
+     * Añade la coordenada del disparo a la partida
+     * @param gameID id de la partida
+     * @param clienteID id del cliente
+     * @param shot coordenada del disparo
+     * @throws RemoteException
+     */
+    public void setCoordinates(Integer gameID, Integer clienteID, Coordinate shot) throws RemoteException;
 
     /**
      * Devuelve una partida en curso

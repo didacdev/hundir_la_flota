@@ -183,7 +183,17 @@ public class Interfaz {
             try {
                 if (Jugador.getListaSincronizada().datosPendientes() != 0) {
                     String evento = Jugador.getListaSincronizada().getEvento();
-                    leerEvento(evento);
+                    if ("ganador".equals(evento)) {
+                        finished = true;
+                        System.out.println();
+                        System.out.println("Has ganado la partida. Volviendo al menú principal...");
+                    } else if ("perdedor".equals(evento)) {
+                        finished = true;
+                        System.out.println();
+                        System.out.println("Has perdido la partida. Volviendo al menú principal...");
+                    } else {
+                        leerEvento(evento);
+                    }
                 } else {
                     Thread.sleep(2000);
                     System.out.println();
@@ -205,6 +215,22 @@ public class Interfaz {
             case "coordenadas":
                 getCoordinates(gameID);
                 break;
+            case "disparo":
+                Coordinate shot = getShotCoordinates();
+                try {
+                    Jugador.getServicioGestor().setCoordinates(gameID, Jugador.getClientId(), shot);
+                    System.out.println();
+                    System.out.println("Coordenadas del disparo enviadas");
+                } catch (Exception e) {
+                    System.out.println();
+                    System.out.println("Error: " + e.getMessage());
+                }
+                break;
+            default:
+                System.out.println();
+                System.out.println("Resultado del disparo: " + event);
+                System.out.println("Tu tablero: ");
+                printBoard(gameID);
         }
     }
 
@@ -239,15 +265,8 @@ public class Interfaz {
             System.out.println();
             System.out.println("Coordenadas enviadas");
 
-            // Obtener los datos del jugador desde las partidas en curso del servidor
-            Partida partida = Jugador.getServicioGestor().getPartidaEnCurso(gameID);
-            common.database.Jugador jugador;
-            if (partida.getPlayerOne().getClienteID().equals(Jugador.getClientId())) {
-                jugador = partida.getPlayerOne();
-            } else {
-                jugador = partida.getPlayerTwo();
-            }
-            jugador.printBoard();
+            // Imprimimos el tablero
+            printBoard(gameID);
         } catch (Exception e) {
             System.out.println();
             System.out.println("Error: " + e.getMessage());
@@ -281,6 +300,46 @@ public class Interfaz {
 
         return validRows.contains(row.toUpperCase()) && column >= 1 && column <= 10 && validOrientations.contains(orientation.toLowerCase());
     }
+
+    private void printBoard(Integer gameID) {
+        try {
+            Partida partida = Jugador.getServicioGestor().getPartidaEnCurso(gameID);
+            common.database.Jugador jugador;
+            if (partida.getPlayerOne().getClienteID().equals(Jugador.getClientId())) {
+                jugador = partida.getPlayerOne();
+            } else {
+                jugador = partida.getPlayerTwo();
+            }
+            jugador.printBoard();
+        } catch (Exception e) {
+            System.out.println();
+        }
+    }
+
+    // -------------- Obtenemos las coordenadas de los disparos --------------
+    private Coordinate getShotCoordinates() {
+        System.out.println();
+        System.out.println("Introduce las coordenadas del disparo: ");
+        System.out.println("Fila (A - J): ");
+        Scanner scanner = new Scanner(System.in);
+        String row = scanner.nextLine();
+        System.out.println("Columna (1 - 10): ");
+        int column = scanner.nextInt();
+
+        // Comprobamos si las coordenadas son válidas
+        if (isValidCoordinate(row, column)) {
+            return new Coordinate(row, column, "-");
+        } else {
+            System.out.println("Las coordenadas introducidas no son válidas. Por favor, inténtalo de nuevo.");
+            return getShotCoordinates();
+        }
+    }
+
+    private boolean isValidCoordinate(String row, int column) {
+        String validRows = "ABCDEFGHIJ";
+        return validRows.contains(row.toUpperCase()) && column >= 1 && column <= 10;
+    }
+
 
     // -------------- Métodos del menú --------------
     private void mostrarInformacion() {
