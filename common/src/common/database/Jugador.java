@@ -123,14 +123,14 @@ public class Jugador implements Serializable {
         }
     }
 
-    public void addGamePoint() {
-        int currentPoints = gamePoints.getOrDefault(clienteID, 0);
-        gamePoints.put(clienteID, currentPoints + 1);
+    public void addGamePoint(Integer gameID) {
+        int currentPoints = gamePoints.getOrDefault(gameID, 0);
+        gamePoints.put(gameID, currentPoints + 1);
     }
 
-    public void addVictoryPoints() {
-        int currentPoints = gamePoints.getOrDefault(clienteID, 0);
-        gamePoints.put(clienteID, currentPoints + 4);
+    public void addVictoryPoints(Integer gameID) {
+        int currentPoints = gamePoints.getOrDefault(gameID, 0);
+        gamePoints.put(gameID, currentPoints + 4);
     }
 
     @Override

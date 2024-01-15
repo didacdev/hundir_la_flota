@@ -131,5 +131,12 @@ public interface ServicioDatosInterfaz extends Remote {
      */
     public void removeStartedGame(Integer gameId) throws RemoteException;
 
+    /**
+     * Devuelve un id de partida
+     * @return id de partida
+     * @throws RemoteException
+     */
+    public Integer getPartidaID() throws RemoteException;
+
 
 }

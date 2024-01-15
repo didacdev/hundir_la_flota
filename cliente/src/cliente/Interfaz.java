@@ -97,8 +97,10 @@ public class Interfaz {
                     listarPartidas();
                     break;
                 case 4:
-                    unirsePartida();
-                    esperarEvento();
+                    boolean joined = unirsePartida();
+                    if (joined) {
+                        esperarEvento();
+                    }
                     break;
                 case 5:
                     if (Boolean.TRUE.equals(logeout())) {
@@ -411,7 +413,7 @@ public class Interfaz {
 
     }
 
-    private void unirsePartida() {
+    private Boolean unirsePartida() {
         boolean joined = false;
         try {
             System.out.println();
@@ -443,5 +445,6 @@ public class Interfaz {
             System.out.println();
             System.out.println("Error al unirse a la partida");
         }
+        return joined;
     }
 }

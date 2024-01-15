@@ -60,9 +60,10 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
 
         try {
             Jugador jugador = Servidor.getServicioDatos().getUsersList().stream().filter(j -> j.getUsername().equals(username)).findFirst().get();
-            Partida partida = new Partida(jugador);
-            int gameId = Servidor.getServicioDatos().addCreatedGame(partida);
-            Servidor.getServicioDatos().addWaitingGame(gameId);
+            int gameId = Servidor.getServicioDatos().getPartidaID();
+            Partida partida = new Partida(gameId, jugador);
+            Servidor.getServicioDatos().addCreatedGame(partida);
+            Servidor.getServicioDatos().addWaitingGame(partida.getGameID());
             return true;
 
         }catch (Exception e) {
@@ -211,7 +212,7 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
             Coordinate shot1 = new Coordinate(shots1.get(0).getRowBow().toUpperCase(), shots1.get(0).getColumnBow(), "-");
 
             // Comprobar el resultado del disparo
-            String result1 = checkShot(shot1, partida.getPlayerTwo(), partida.getPlayerOne());
+            String result1 = checkShot(shot1, partida.getPlayerTwo(), partida.getPlayerOne(), gameId);
 
             // Informar del resultado del disparo
             callbackJugador1.notificar(gameId + "-" + result1);
@@ -231,7 +232,7 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
             }
             Coordinate shot2 = new Coordinate(shots2.get(0).getRowBow().toUpperCase(), shots2.get(0).getColumnBow(), "-");
 
-            String result2 = checkShot(shot2, partida.getPlayerOne(), partida.getPlayerTwo());
+            String result2 = checkShot(shot2, partida.getPlayerOne(), partida.getPlayerTwo(), gameId);
 
             callbackJugador2.notificar(gameId + "-" + result2);
             callbackJugador1.notificar(gameId + "-" + result2);
@@ -265,7 +266,7 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
         Servidor.getServicioDatos().removeStartedGame(gameId);
     }
 
-    private String checkShot(Coordinate shot, Jugador opponent, Jugador player) {
+    private String checkShot(Coordinate shot, Jugador opponent, Jugador player, Integer gameId) {
         List<Coordinate> occupiedCoordinatesShipOne = opponent.getShipOne().getOccupiedCoordinates();
         List<Coordinate> occupiedCoordinatesShipTwo = opponent.getShipTwo().getOccupiedCoordinates();
 
@@ -273,7 +274,7 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
 
         for (Coordinate coordinate : occupiedCoordinatesShipOne) {
             if (coordinate.equals(shot)) {
-                player.addGamePoint();
+                player.addGamePoint(gameId);
                 if (receivedShots.containsAll(occupiedCoordinatesShipOne)) {
                     return "hundido";
                 }
@@ -283,7 +284,7 @@ public class ServicioGestorImpl implements ServicioGestorInterfaz {
 
         for (Coordinate coordinate : occupiedCoordinatesShipTwo) {
             if (coordinate.equals(shot)) {
-                player.addGamePoint();
+                player.addGamePoint(gameId);
                 if (receivedShots.containsAll(occupiedCoordinatesShipTwo)) {
                     return "hundido";
                 }

@@ -101,13 +101,20 @@ public class ServicioDatosImpl implements ServicioDatosInterfaz {
     }
 
     @Override
-    public Integer addCreatedGame(Partida partida) throws RemoteException {
+    public Integer getPartidaID() throws RemoteException {
         Random random = new Random();
         Integer gameId;
 
         do {
             gameId = random.nextInt(1000);
         } while (createdGames.containsKey(gameId));
+
+        return gameId;
+    }
+
+    @Override
+    public Integer addCreatedGame(Partida partida) throws RemoteException {
+        int gameId = partida.getGameID();
 
         createdGames.put(gameId, partida);
 
